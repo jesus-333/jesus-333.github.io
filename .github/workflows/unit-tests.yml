@@ -18,6 +18,10 @@ on:
       - "test/**"
       - "package.json"
       - "package-lock.json"
+      - "common_material/**"
+      - "cv_tex/**"
+      - "bin/cv/**"
+      - "Makefile"
       - ".github/workflows/unit-tests.yml"
   pull_request:
     branches:
@@ -36,6 +40,10 @@ on:
       - "test/**"
       - "package.json"
       - "package-lock.json"
+      - "common_material/**"
+      - "cv_tex/**"
+      - "bin/cv/**"
+      - "Makefile"
       - ".github/workflows/unit-tests.yml"
 
 jobs:
@@ -68,6 +76,14 @@ jobs:
 
       - name: Run style contract lint 🧷
         run: npm run lint:style-contract
+
+      - name: Check generated CV files match common_material/cv.toml 🧬
+        # ALLOW_TODO=1 because the checked-in cv.yml/resume.json were
+        # generated with placeholders still present. Drop it once
+        # common_material/cv.toml has no @TODO left.
+        run: |
+          pip install pyyaml
+          make cv-check ALLOW_TODO=1
 
       - name: Install build prerequisites 🔧
         run: |

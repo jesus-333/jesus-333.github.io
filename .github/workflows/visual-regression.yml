@@ -36,6 +36,11 @@ on:
 
 jobs:
   visual-regression:
+    # The baseline is a worktree at tag v0.16.3, which exists only in the
+    # upstream repository. In a fork there are no tags, so the checkout
+    # fails before any test runs. Same guard as the other upstream-only
+    # workflows here (broken-links, release, star-history).
+    if: github.repository == 'alshedivat/al-folio'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:

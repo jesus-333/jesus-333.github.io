@@ -1,0 +1,75 @@
+name: Mirror cv_tex to cv_claude
+
+# One-way mirror of cv_tex/ into the standalone jesus-333/cv_claude repo,
+# which exists so the LaTeX CV can be opened in Overleaf.
+#
+# THIS IS ONE-WAY AND DESTRUCTIVE ON THE FAR SIDE. Anything edited in
+# Overleaf, or committed directly to cv_claude, is overwritten the next
+# time cv_tex/ changes here. Overleaf is a place to compile the CV, not a
+# place to edit it. The source of truth is common_material/cv.toml plus
+# the hand-written prose in cv_tex/sections/.
+#
+# SETUP (once):
+#   1. Create a fine-grained Personal Access Token at
+#      https://github.com/settings/personal-access-tokens/new
+#        - Repository access: only jesus-333/cv_claude
+#        - Repository permissions: Contents -> Read and write
+#   2. Add it to THIS repo as a secret named CV_SYNC_TOKEN:
+#      Settings -> Secrets and variables -> Actions -> New repository secret
+#   Until that secret exists the job fails with a clear message rather than
+#   half-mirroring.
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - "cv_tex/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cv-mirror
+  cancel-in-progress: false
+
+jobs:
+  mirror:
+    name: Push cv_tex to cv_claude
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v4
+
+      - name: Check the token is configured 🔑
+        env:
+          TOKEN: ${{ secrets.CV_SYNC_TOKEN }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "::error::CV_SYNC_TOKEN is not set. See the setup notes at the" \
+                 "top of .github/workflows/cv-mirror.yml."
+            exit 1
+          fi
+
+      - name: Mirror 🪞
+        env:
+          TOKEN: ${{ secrets.CV_SYNC_TOKEN }}
+          TARGET: jesus-333/cv_claude
+        run: |
+          set -euo pipefail
+          git clone --depth 1 "https://x-access-token:${TOKEN}@github.com/${TARGET}.git" target
+          # Replace the tracked contents wholesale, but keep the target's own
+          # git metadata and its MIRROR.md notice.
+          find target -mindepth 1 -maxdepth 1 \
+            ! -name .git ! -name MIRROR.md -exec rm -rf {} +
+          cp -a cv_tex/. target/
+          cd target
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "cv_claude already matches cv_tex/; nothing to push."
+            exit 0
+          fi
+          git commit -m "Mirror cv_tex/ from ${GITHUB_REPOSITORY}@${GITHUB_SHA:0:7}"
+          git push origin HEAD:main

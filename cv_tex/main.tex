@@ -1,0 +1,47 @@
+% =====================================================================
+%  Alberto Zancanaro -- CV, one-page version.
+%
+%  This is the Overleaf main document. It compiles with the default
+%  pdfLaTeX compiler; LuaLaTeX and XeLaTeX also work with no changes.
+%
+%  WHERE THE CONTENT COMES FROM
+%    generated/  is written by bin/cv/build_tex.py from common_material/cv.toml.
+%                Never edit those files: the next `make cv` overwrites them.
+%    sections/   is hand-written prose. summary.tex is yours to rewrite.
+%
+%  Per application you normally touch only:
+%    sections/summary.tex            -> the profile paragraph
+%    common_material/cv.toml         -> [profiles.*], then: make cv PROFILE=<name>
+%
+%  The long-form version lives in cv_long.tex.
+% =====================================================================
+\documentclass[10pt]{article}
+\usepackage[compact]{zancanarocv}
+
+\input{generated/personal_data}
+
+\hypersetup{
+  pdftitle  = {Alberto Zancanaro -- Curriculum Vitae},
+  pdfauthor = {Alberto Zancanaro},
+  pdfsubject= {Curriculum Vitae},
+  pdfkeywords={machine learning, deep learning, generative models,
+               biomedical signal processing, EEG, Python, PyTorch},
+}
+
+\begin{document}
+
+\cvheader
+\input{sections/summary}
+\input{generated/education}
+\input{generated/experience}
+\input{generated/skills}
+\input{generated/projects}
+\input{generated/publications_short}
+
+% Italian applications only -- uncomment the next line.
+% \input{sections/legal_it}
+
+% Hand-written, off-source-of-truth escape hatch. Ships empty.
+\input{sections/local_overrides}
+
+\end{document}

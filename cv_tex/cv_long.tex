@@ -1,0 +1,40 @@
+% =====================================================================
+%  Alberto Zancanaro -- CV, long (academic) version.
+%
+%  Same source as main.tex, but with the complete publication list and no
+%  one-page budget. On Overleaf: Menu -> Main document -> cv_long.tex.
+%  Locally: `make long`.
+% =====================================================================
+\documentclass[10pt]{article}
+\usepackage{zancanarocv}
+
+\input{generated/personal_data}
+
+\cvlongformtrue   % selects the long-form branches inside the section files
+
+\hypersetup{
+  pdftitle  = {Alberto Zancanaro -- Curriculum Vitae (extended)},
+  pdfauthor = {Alberto Zancanaro},
+  pdfsubject= {Curriculum Vitae},
+  pdfkeywords={machine learning, deep learning, generative models,
+               biomedical signal processing, EEG, Python, PyTorch},
+}
+
+\begin{document}
+
+\cvheader
+\input{sections/summary}
+\input{generated/education}
+\input{generated/experience}
+\input{generated/skills}
+\input{generated/projects}
+\input{generated/publications_full}
+\input{generated/languages}
+
+% Italian applications only -- uncomment the next line.
+% \input{sections/legal_it}
+
+% Hand-written, off-source-of-truth escape hatch. Ships empty.
+\input{sections/local_overrides}
+
+\end{document}

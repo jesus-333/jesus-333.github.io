@@ -1,0 +1,382 @@
+# =====================================================================
+#  SINGLE SOURCE OF TRUTH for every CV output in this repository.
+#
+#  Edit this file, then run `make cv`. It generates, and you never edit
+#  by hand:
+#    _data/cv.yml                 the website's /cv/ page
+#    assets/json/resume.json      the JSON Resume twin
+#    cv_tex/generated/*.tex       the LaTeX CV
+#    _bibliography/papers.bib     copy of common_material/papers.bib
+#
+#  TWO CONVENTIONS USED THROUGHOUT
+#
+#  1. `<field>_tex` -- an optional sibling of any string field. When
+#     present it is emitted VERBATIM into LaTeX (no escaping), while the
+#     plain field still feeds the website. Use it when you deliberately
+#     want LaTeX markup: \textbar{}, \textsuperscript{}, \emph{}.
+#
+#  2. `@TODO{...}` -- an inline placeholder. In LaTeX it becomes
+#     \cvTODO{...} and typesets in RED so it cannot ship unnoticed. The
+#     website generators REFUSE TO RUN while one is present unless you
+#     pass --allow-todo, so a placeholder can never leak onto a public
+#     page. An entry-level `todo = true` marks a whole entry: red in the
+#     PDF, omitted entirely from the website.
+#
+#  Dates are ALWAYS quoted strings: "YYYY", "YYYY-MM", "YYYY-MM-DD" or
+#  "present". Never a bare date literal -- TOML would turn it into a
+#  datetime and destroy the year-vs-month distinction.
+# =====================================================================
+
+schema_version = 1
+
+# ---------------------------------------------------------------------
+#  BASICS
+# ---------------------------------------------------------------------
+[basics]
+name      = "Alberto Zancanaro"
+label     = "Ph.D. in Information Engineering | Deep learning and generative AI for biomedical signals and complex systems"
+label_tex = "Ph.D. in Information Engineering \\textbar{} Deep learning and generative AI for biomedical signals and complex systems"
+email     = "alberto.zancanaro.1@gmail.com"
+email_alt = "alberto.zancanaro@uni.lu"
+phone     = "(+39) 347 8855001"
+phone_uri = "+393478855001"
+# The phone number is deliberately kept off the public website. Flip to
+# true only if you want it served at /assets/json/resume.json.
+phone_public = false
+image     = ""
+citizenship     = "Italian citizen (EU) | no work permit required"
+citizenship_tex = "Italian citizen (EU) \\textbar{} no work permit required"
+summary = """
+Machine learning researcher working on deep generative models for biomedical \
+signals and complex systems, from model design to deployment in embedded and \
+federated settings."""
+
+[basics.location]
+display      = "@TODO{City, Country}"
+city         = ""
+region       = ""
+postal_code  = ""
+street       = ""
+country_code = ""
+
+# ---------------------------------------------------------------------
+#  LINKS.  `id` is referenced from [tex.header]; `site = true` exports
+#  the link to the website's social list.
+# ---------------------------------------------------------------------
+[[links]]
+id        = "github"
+network   = "GitHub"
+username  = "jesus-333"
+url       = "https://github.com/jesus-333"
+tex_label = "github.com/jesus-333"
+tex_icon  = "github"
+site      = true
+
+[[links]]
+id        = "orcid"
+network   = "ORCID"
+username  = "0000-0002-5276-7030"
+url       = "https://orcid.org/0000-0002-5276-7030"
+tex_label = "0000-0002-5276-7030"
+tex_icon  = "orcid"
+site      = true
+
+[[links]]
+id        = "scholar"
+network   = "Google Scholar"
+username  = "P57g8QMAAAAJ"
+url       = "https://scholar.google.com/citations?user=P57g8QMAAAAJ"
+tex_label = "Google Scholar"
+tex_icon  = "graduation-cap"
+site      = true
+
+[[links]]
+id        = "linkedin"
+network   = "LinkedIn"
+username  = "@TODO{LINKEDIN-HANDLE}"
+url       = "https://www.linkedin.com/in/LINKEDIN-HANDLE"
+tex_label = "@TODO{LinkedIn}"
+tex_icon  = "linkedin"
+site      = false           # flip to true once the handle is real
+todo      = true
+
+# Composition of the three contact lines under the name in the PDF.
+# Tokens are either a [[links]].id or one of the reserved words
+# phone / email / email_alt / location / citizenship.
+[tex.header]
+line_one   = ["phone", "email", "email_alt"]
+line_two   = ["github", "orcid", "scholar", "linkedin"]
+line_three = ["location", "citizenship"]
+
+# ---------------------------------------------------------------------
+#  SECTION TITLES AND ORDER
+# ---------------------------------------------------------------------
+[site]
+cv_pdf        = "/assets/pdf/Zancanaro_CV.pdf"
+section_order = ["Education", "Experience", "Projects", "Publications", "Skills", "Languages"]
+
+[sections.education]
+site_title = "Education"
+tex_title  = "Education"
+
+[sections.experience]
+site_title = "Experience"
+tex_title  = "Research & Professional Experience"
+
+[sections.projects]
+site_title = "Projects"
+tex_title  = "Selected Projects"
+
+[sections.publications]
+site_title = "Publications"
+tex_title  = "Publications"
+
+[sections.skills]
+site_title = "Skills"
+tex_title  = "Technical Skills"
+
+[sections.languages]
+site_title = "Languages"
+tex_title  = "Languages"
+
+# ---------------------------------------------------------------------
+#  EDUCATION.  Output order is computed (reverse chronological), so the
+#  order of the blocks here does not matter.
+# ---------------------------------------------------------------------
+[[education]]
+id          = "phd"
+institution = "University of Padua"
+unit        = "DEI"
+url         = "https://www.dei.unipd.it/"
+location    = "Padua, Italy"
+study_type  = "Ph.D."
+area        = "Information Engineering"
+start       = "2022-01"
+end         = "2025-01"
+thesis      = "Modeling complex living systems via deep learning and signal processing"
+
+[[education]]
+id          = "msc"
+institution = "University of Padua"
+unit        = "DEI"
+location    = "Padua, Italy"
+study_type  = "M.Sc."
+area        = "ICT for Internet and Multimedia"
+start       = "2019-01"
+end         = "2021-07"
+courses     = ["Life and Health"]
+thesis      = "Deep learning algorithms for the analysis of EEG signals for neuroscience and motor rehabilitation"
+
+[[education]]
+id          = "bsc"
+institution = "University of Padua"
+unit        = "DEI"
+location    = "Padua, Italy"
+study_type  = "B.Sc."
+area        = "Information Engineering"
+start       = "2015-10"
+end         = "2018-11"
+thesis      = "Compartmental model for estimating the kinetics of the 11C-PIB drug"
+thesis_tex  = "Compartmental model for estimating the kinetics of the \\textsuperscript{11}C-PIB drug"
+
+# ---------------------------------------------------------------------
+#  EXPERIENCE.  kind = research | teaching | industry | volunteer
+#  (volunteer entries are routed to the Volunteer section instead).
+# ---------------------------------------------------------------------
+[[experience]]
+id         = "current"
+todo       = true            # red in the PDF, omitted from the website
+position   = "Current role"
+company    = "Institution"
+unit       = "unit"
+location   = "City, Country"
+start      = "2025-02"
+end        = "present"
+kind       = "research"
+highlights = ["What you work on, one or two lines."]
+
+[[experience]]
+id         = "phd-researcher"
+position   = "Doctoral Researcher"
+company    = "University of Padua"
+unit       = "DEI"
+location   = "Padua, Italy"
+start      = "2022-01"
+end        = "2025-01"
+kind       = "research"
+highlights = [
+  "Deep generative models for biomedical signals: classification, anomaly detection and reconstruction of EEG and other biological data.",
+]
+
+[[experience]]
+id         = "klagenfurt"
+position   = "Visiting Researcher"
+company    = "University of Klagenfurt"
+unit       = "ITEC"
+location   = "Klagenfurt, Austria"
+start      = "2024-06"
+end        = "2024-09"
+kind       = "research"
+highlights = [
+  "Development and deployment of deep learning models on embedded devices.",
+  "Application of federated learning techniques to biological data.",
+]
+
+[[experience]]
+id         = "ta-ehealth"
+position   = "Teaching Assistant"
+company    = "University of Padua"
+unit       = "DEI"
+location   = "Padua, Italy"
+start      = "2023"
+end        = "2024"
+kind       = "teaching"
+highlights = [
+  "Teaching assistant for two editions of the eHealth course, M.Sc. in ICT for Internet and Multimedia.",
+]
+
+[[experience]]
+id         = "coimbra"
+position   = "Visiting Student"
+company    = "University of Coimbra"
+unit       = "ISR"
+location   = "Coimbra, Portugal"
+start      = "2020-09"
+end        = "2021-02"
+kind       = "research"
+highlights = ["Development of deep learning models for the analysis of EEG signals."]
+
+# ---------------------------------------------------------------------
+#  SKILLS
+# ---------------------------------------------------------------------
+[[skills]]
+name     = "Programming"
+icon     = "fa-solid fa-code"
+keywords = ["Python (primary)", "Rust", "C++", "C# (Unity)", "JavaScript"]
+
+[[skills]]
+name     = "ML frameworks"
+icon     = "fa-solid fa-brain"
+keywords = ["PyTorch", "TensorFlow", "Keras"]
+
+[[skills]]
+name     = "Scientific stack"
+icon     = "fa-solid fa-chart-line"
+keywords = ["NumPy", "SciPy", "scikit-learn", "pandas", "Matplotlib"]
+
+[[skills]]
+name     = "Methods"
+icon     = "fa-solid fa-flask"
+keywords = [
+  "Deep generative models (VAE, diffusion)",
+  "transformers",
+  "self-supervised learning",
+  "federated learning",
+  "signal processing",
+]
+
+[[skills]]
+name     = "Tools"
+icon     = "fa-solid fa-screwdriver-wrench"
+keywords = ["Linux", "Git", "Docker", "LaTeX", "Neovim", "Weights & Biases"]
+
+# ---------------------------------------------------------------------
+#  LANGUAGES
+# ---------------------------------------------------------------------
+[[languages]]
+name    = "Italian"
+fluency = "Native"
+inline  = "native"
+
+[[languages]]
+name    = "English"
+fluency = "@TODO{C1}"
+note    = "working language of research and teaching"
+
+[[languages]]
+name    = "French"
+fluency = "@TODO{A2}"
+
+# ---------------------------------------------------------------------
+#  PROJECTS
+# ---------------------------------------------------------------------
+[[projects]]
+id       = "dl-bio"
+name     = "Deep Learning applied to Biological Data"
+stack    = ["Python"]
+summary  = "Classification, anomaly detection and reconstruction of biological data."
+featured = true
+
+[[projects]]
+id       = "eeg-framework"
+name     = "Deep Learning for EEG — research framework"
+stack    = ["Python"]
+summary  = "Personal library for deep learning on EEG: models built from configuration dictionaries, Weights & Biases experiment tracking, reusable pipelines."
+featured = true
+
+[[projects]]
+id       = "soft-dtw-rust"
+name     = "soft-DTW-Rust"
+url      = "https://pypi.org/project/soft-dtw-rust/"
+stack    = ["Rust", "Python (PyO3)"]
+summary  = "Implementation of the soft-DTW algorithm in Rust with Python bindings; published on PyPI."
+featured = true
+
+[[projects]]
+id       = "unity-ar"
+name     = "Unity AR application"
+stack    = ["C#", "Python"]
+summary  = "Python-side neural network tracks hand movement and streams it to Unity, where C# scripts drive objects in an AR scene."
+featured = true
+
+# Footer line under Selected Projects in the PDF only.
+[projects_note]
+text = "A selection only; more examples on"
+link = "github"
+
+# ---------------------------------------------------------------------
+#  PUBLICATIONS -- metadata only.
+#  The records themselves live in common_material/papers.bib and are
+#  never duplicated here. This table only decides selection, grouping
+#  and per-entry corrections.
+# ---------------------------------------------------------------------
+[publications]
+bib = "common_material/papers.bib"
+# Accepted spellings of your own name, for \me bolding.
+me_author_keys = ["Zancanaro, Alberto", "Zancanaro, A", "Zancanaro, A."]
+# zancanaro2025modeling is the PhD thesis (already in Education);
+# zancanaro2021proceedings is a proceedings record of zancanaro2021cnn.
+exclude = ["zancanaro2025modeling", "zancanaro2021proceedings"]
+# Default three for the one-page CV. A [profiles.*] entry overrides this.
+featured = ["cisotto2024hveegnet", "zancanaro2025blockdtw", "zancanaro2023veegnet_springer"]
+
+# class routes the entry into a \subsection*{} of the long CV:
+# journal | conference | preprint | thesis
+[publications.overrides.cisotto2023hveegnet]
+class = "preprint"
+url   = "https://arxiv.org/abs/2312.00799"
+
+# ---------------------------------------------------------------------
+#  TAILORING PROFILES (LaTeX output only).
+#
+#  A profile selects and orders existing entries by id. It never
+#  introduces new text -- that is what keeps the source of truth
+#  single. Build one with:  make cv PROFILE=lih_datascientist
+#
+#  The prose you rewrite per application lives in
+#  cv_tex/sections/summary.tex, which is hand-written on purpose.
+# ---------------------------------------------------------------------
+[profiles.default]
+tagline            = ""        # "" = use basics.label
+experience         = ["current", "phd-researcher", "klagenfurt", "ta-ehealth", "coimbra"]
+projects           = ["dl-bio", "eeg-framework", "soft-dtw-rust", "unity-ar"]
+publications_short = ["cisotto2024hveegnet", "zancanaro2025blockdtw", "zancanaro2023veegnet_springer"]
+skill_order        = ["Programming", "ML frameworks", "Scientific stack", "Methods", "Tools"]
+
+# Worked example. Copy this block, rename it, retune the four lists.
+[profiles.industry_ml]
+tagline            = "AI / Machine Learning Scientist — Biomedical Data"
+experience         = ["current", "phd-researcher", "coimbra"]
+projects           = ["eeg-framework", "soft-dtw-rust", "dl-bio"]
+publications_short = ["cisotto2024hveegnet", "cisotto2023hveegnet", "zancanaro2023veegnet_springer"]
+skill_order        = ["ML frameworks", "Programming", "Methods", "Scientific stack", "Tools"]

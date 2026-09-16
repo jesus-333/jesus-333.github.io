@@ -234,6 +234,10 @@ exclude:
   - al-folio-upgrade-report.md
   - bin/
   - CLAUDE.md
+  - common_material/
+  - cv_tex/
+  - instrunctions/
+  - Makefile
   - Dockerfile
   - docker-compose.yml
   - docker-compose-slim.yml
@@ -356,8 +360,8 @@ display_categories: ["external-services"] # these categories will be displayed o
 # -----------------------------------------------------------------------------
 
 scholar:
-  last_name: [Einstein]
-  first_name: [Albert, A.]
+  last_name: [Zancanaro]
+  first_name: [Alberto, A.]
 
   style: apa
   locale: en

@@ -1,0 +1,261 @@
+% =====================================================================
+%  zancanarocv.sty -- CV template for Alberto Zancanaro
+%
+%  All layout lives here. You should almost never need to edit this file
+%  when tailoring the CV for a new application: edit config/personal_data.tex
+%  and the files in sections/ instead.
+%
+%  Engine: compiles as-is with pdfLaTeX (Overleaf's default compiler),
+%  LuaLaTeX and XeLaTeX. No Overleaf project setting to change.
+% =====================================================================
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{zancanarocv}[2026/09/16 v1.0 CV template]
+
+% ---------------------------------------------------------------------
+%  Package options
+%    [compact]  tighter vertical rhythm -- use it to win back a few lines
+%               when the one-page version is one or two lines too long
+%    [relaxed]  default, more air
+% ---------------------------------------------------------------------
+\newif\ifcv@compact
+\DeclareOption{compact}{\cv@compacttrue}
+\DeclareOption{relaxed}{\cv@compactfalse}
+\ExecuteOptions{relaxed}
+\ProcessOptions\relax
+
+% Set \cvlongformtrue in a driver to select the long (academic) variant.
+% Section files use it where the two versions must differ.
+\newif\ifcvlongform
+\cvlongformfalse
+
+\RequirePackage{iftex}
+\ifPDFTeX
+  % cmap writes a ToUnicode map into the PDF, so the text layer stays
+  % copy-pasteable and readable by CV-parsing (ATS) software.
+  \RequirePackage{cmap}
+  \RequirePackage[T1]{fontenc}
+  \RequirePackage[utf8]{inputenc}
+\fi
+
+% ---------------------------------------------------------------------
+%  Page geometry -- A4 (European standard; the old CV was US Letter)
+% ---------------------------------------------------------------------
+\RequirePackage[a4paper,top=1.1cm,bottom=1.1cm,left=1.45cm,right=1.45cm,
+                footskip=0.7cm]{geometry}
+
+% ---------------------------------------------------------------------
+%  Packages
+% ---------------------------------------------------------------------
+\RequirePackage[default]{lato}      % humanist sans; swap here to change the face
+\RequirePackage{xcolor}
+\RequirePackage{titlesec}
+\RequirePackage{enumitem}
+\RequirePackage{tabularx}
+\RequirePackage{array}
+\RequirePackage{fontawesome5}
+\RequirePackage{microtype}
+\RequirePackage{accsupp}       % lets us hide decorative glyphs from text extraction
+\RequirePackage{lastpage}
+\RequirePackage{fancyhdr}
+\RequirePackage{hyperref}           % keep last
+
+% ---------------------------------------------------------------------
+%  Colours -- one accent colour drives rules, icons and links.
+%  Set to black for a strictly monochrome CV.
+% ---------------------------------------------------------------------
+\definecolor{cvaccent}{HTML}{1F4E79}   % deep blue
+\definecolor{cvheading}{HTML}{1A1A1A}
+\definecolor{cvrule}{HTML}{9AA5B1}
+\definecolor{cvmuted}{HTML}{4A4A4A}
+
+\hypersetup{
+  colorlinks = true,
+  urlcolor   = cvaccent,
+  linkcolor  = cvaccent,
+  citecolor  = cvaccent,
+  breaklinks = true,
+}
+
+% ---------------------------------------------------------------------
+%  Vertical rhythm -- every skip in this file comes from these lengths,
+%  so the whole document can be tightened from one place.
+% ---------------------------------------------------------------------
+\newlength{\cvSecBefore}
+\newlength{\cvSecAfter}
+\newlength{\cvEntrySkip}
+\newlength{\cvDetailSkip}
+\newlength{\cvHang}
+\newlength{\cvAfterHead}
+\ifcv@compact
+  \setlength{\cvSecBefore}{5pt}  \setlength{\cvSecAfter}{1.5pt}
+  \setlength{\cvEntrySkip}{2.5pt} \setlength{\cvDetailSkip}{1pt}
+  \setlength{\cvHang}{0.9em}  \setlength{\cvAfterHead}{-2pt}
+\else
+  \setlength{\cvSecBefore}{9pt}  \setlength{\cvSecAfter}{4pt}
+  \setlength{\cvEntrySkip}{4pt}  \setlength{\cvDetailSkip}{1.5pt}
+  \setlength{\cvHang}{0.9em}  \setlength{\cvAfterHead}{-1pt}
+\fi
+
+% ---------------------------------------------------------------------
+%  Global text setup
+% ---------------------------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+% Page footer: shown only when the CV runs to more than one page.
+\fancyfoot[C]{\ifnum\value{page}>1\relax
+  \color{cvmuted}\footnotesize \cvName{} -- page \thepage{} of \pageref{LastPage}\fi}
+
+\ifcv@compact\linespread{0.97}\selectfont\fi
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\raggedbottom
+\raggedright
+
+\setlist[itemize]{leftmargin=1.1em, topsep=1pt, itemsep=0.5pt, parsep=0pt,
+                  label=\textcolor{cvrule}{\footnotesize$\bullet$}}
+\setlist[enumerate]{leftmargin=1.6em, topsep=1pt, itemsep=1.5pt, parsep=0pt}
+
+% ---------------------------------------------------------------------
+%  Section headings -- bold uppercase + rule (the look of the old CV)
+% ---------------------------------------------------------------------
+% The rule is drawn in vertical mode (after \par), so it sits *below* the
+% heading with a real gap instead of underlining the capitals.
+\newcommand{\cvsectionrule}{%
+  \par\nobreak\vspace{2.5pt}%
+  {\color{cvrule}\hrule height 0.8pt}%
+  \nobreak}
+\titleformat{\section}
+  {\color{cvheading}\large\bfseries}
+  {}{0em}
+  {\MakeUppercase}
+  [\cvsectionrule]
+% Negative left margin: headings hang slightly into the margin, so the body
+% below them reads as indented (the look of the previous CV).
+\titlespacing*{\section}{-\cvHang}{\cvSecBefore}{\cvSecAfter}
+
+% Sub-headings inside a section (used to group the full publication list).
+\titleformat{\subsection}
+  {\color{cvmuted}\normalsize\bfseries}
+  {}{0em}{}
+\titlespacing*{\subsection}{0pt}{6pt}{2pt}
+
+% ---------------------------------------------------------------------
+%  Header block
+% ---------------------------------------------------------------------
+% Separator between contact items.
+\newcommand{\cvsep}{\hspace{0.6em}\textcolor{cvrule}{\textbar}\hspace{0.6em}}
+% \cvicon{<fontawesome command>} -- accent-coloured, and marked with an empty
+% ActualText so the glyph does not leak into the PDF text layer. Without this,
+% copy-paste and CV-parsing software pick up junk characters (pdfLaTeX) or the
+% literal icon names (LuaLaTeX) in the middle of your contact details.
+\newcommand{\cvicon}[1]{%
+  \BeginAccSupp{method=plain,ActualText={}}\textcolor{cvaccent}{#1}\EndAccSupp{}\,}
+
+\newcommand{\cvheader}{%
+  \begin{center}
+    {\Huge\bfseries\color{cvheading}\MakeUppercase{\cvName}}\\[3pt]
+    {\normalsize\color{cvmuted}\cvTagline}\\[7pt]
+    {\small \cvContactLineOne}\\[3pt]
+    {\small \cvContactLineTwo}\\[2pt]
+    {\small\color{cvmuted} \cvContactLineThree}
+  \end{center}
+  \vspace{-4pt}%
+  {\color{cvrule}\hrule height 0.8pt}%
+  \vspace{4pt}%
+}
+
+% ---------------------------------------------------------------------
+%  Entries
+% ---------------------------------------------------------------------
+% \cventry{<role / degree>}{<organisation, unit>}{<location>}{<dates>}
+%   Two lines: bold role + bold dates, then italic organisation + location.
+\newcommand{\cventry}[4]{%
+  \par\vspace{\cvEntrySkip}%
+  \begin{tabularx}{\linewidth}{@{}X r@{}}
+    \textbf{#1} & \textbf{#4}\\
+    \emph{\color{cvmuted}#2} & \emph{\color{cvmuted}#3}\\
+  \end{tabularx}%
+  \par\vspace{\cvAfterHead}%
+  \nopagebreak
+}
+
+% \cvcompactentry{<left: title, organisation>}{<right: dates>}
+%   Single-line variant, matching the density of the old one-page CV.
+\newcommand{\cvcompactentry}[2]{%
+  \par\vspace{\cvEntrySkip}%
+  \begin{tabularx}{\linewidth}{@{}X r@{}}
+    \textbf{#1} & \textbf{#2}\\
+  \end{tabularx}%
+  \par\vspace{\cvAfterHead}%
+  \nopagebreak
+}
+
+% \cvdetail{<text>} -- description / thesis line under an entry
+\newcommand{\cvdetail}[1]{%
+  \par\vspace{\cvDetailSkip}{\small #1\par}\vspace{\cvDetailSkip}%
+}
+
+% Bullet list under an entry.
+\newenvironment{cvbullets}
+  {\vspace{-1pt}\begin{itemize}\small}
+  {\end{itemize}\vspace{1pt}}
+
+% ---------------------------------------------------------------------
+%  Projects
+% ---------------------------------------------------------------------
+% \cvproject{<name>}{<stack>}{<description>}
+\newcommand{\cvproject}[3]{%
+  \par\vspace{\cvEntrySkip}%
+  \begin{tabularx}{\linewidth}{@{}X r@{}}
+    \textbf{#1} & \emph{\color{cvmuted}#2}\\
+  \end{tabularx}%
+  \par\vspace{\cvAfterHead}%
+  \nopagebreak
+  \cvdetail{#3}%
+}
+
+% ---------------------------------------------------------------------
+%  Skills / languages -- aligned label column
+% ---------------------------------------------------------------------
+% NOTE: plain tabular, not tabularx -- tabularx reads its body as an argument
+% and therefore cannot be wrapped in a user-defined environment.
+\newenvironment{cvtable}[1][0.20\linewidth]
+  {\vspace{2pt}\small
+   \begin{tabular}{@{}>{\raggedright\arraybackslash}p{#1}
+                     >{\raggedright\arraybackslash}p{\dimexpr\linewidth-#1-2\tabcolsep\relax}@{}}}
+  {\end{tabular}\vspace{2pt}}
+
+% \cvrow{<label>}{<content>} -- use inside cvtable
+\newcommand{\cvrow}[2]{\textbf{#1} & #2 \\}
+
+% ---------------------------------------------------------------------
+%  Publications
+% ---------------------------------------------------------------------
+\newcommand{\me}{\textbf{A. Zancanaro}}   % bolds your name in author lists
+
+% \cvpublication{<authors>}{<title>}{<venue, year>}{<doi or url>}
+\newcommand{\cvpublication}[4]{%
+  \item #1. \emph{#2}. #3.%
+  \ifx\relax#4\relax\else\ \href{#4}{\small\faIcon{external-link-alt}}\fi
+}
+
+\newenvironment{cvpublications}
+  {\vspace{2pt}\small\begin{enumerate}}
+  {\end{enumerate}}
+
+% ---------------------------------------------------------------------
+%  Misc
+% ---------------------------------------------------------------------
+% Small print block (used by the optional Italian legal statement).
+\newcommand{\cvfineprint}[1]{%
+  \vspace{6pt}{\color{cvmuted}\scriptsize #1\par}%
+}
+
+% Unfilled placeholder: rendered in red so it cannot ship unnoticed.
+% Set \cvhideTODOtrue in the driver to typeset placeholders in normal black.
+\newif\ifcvhideTODO
+\cvhideTODOfalse
+\newcommand{\cvTODO}[1]{\ifcvhideTODO #1\else\textcolor{red}{#1}\fi}
+
+\endinput
