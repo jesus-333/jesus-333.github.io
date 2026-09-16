@@ -1,2 +1,7 @@
 # Force LF line endings, needed for Docker to work on Windows
 *.sh text eol=lf
+# Written by bin/cv/* from common_material/. Collapse them in diffs.
+cv_tex/generated/** linguist-generated=true
+_data/cv.yml linguist-generated=true
+assets/json/resume.json linguist-generated=true
+_bibliography/papers.bib linguist-generated=true

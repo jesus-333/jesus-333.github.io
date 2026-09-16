@@ -1,0 +1,17 @@
+# LaTeX build artefacts (Overleaf's git sync will push these otherwise)
+*.aux
+*.log
+*.out
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.toc
+*.bbl
+*.blg
+*.bcf
+*.run.xml
+*.xdv
+
+# Built PDFs. The published copy lives in ../assets/pdf/ and is produced by
+# bin/cv/build_pdf.sh, so the ones built here are scratch.
+*.pdf

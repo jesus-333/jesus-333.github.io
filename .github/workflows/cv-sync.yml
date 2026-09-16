@@ -1,0 +1,71 @@
+name: Regenerate CV files
+
+# Manual only. Runs the same generators as `make cv` and commits whatever
+# changed, so the derived files can be refreshed from the GitHub UI after
+# editing common_material/cv.toml in the browser.
+#
+# The local path is the primary one: `make cv` on your machine. This is a
+# convenience, not a requirement.
+#
+# ALLOW_TODO mirrors `make cv ALLOW_TODO=1`: leave it off and the run stops
+# rather than publishing an unresolved @TODO placeholder to the website.
+
+on:
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: "Tailoring profile from cv.toml"
+        type: string
+        default: default
+      allow_todo:
+        description: "Publish even with unresolved @TODO placeholders"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cv-sync
+  cancel-in-progress: false
+
+jobs:
+  regenerate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v4
+
+      - name: Setup Python 🐍
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install deps 📦
+        run: pip install pyyaml
+
+      - name: Regenerate 🔧
+        run: |
+          make cv \
+            PROFILE='${{ inputs.profile }}' \
+            ALLOW_TODO='${{ inputs.allow_todo && '1' || '' }}'
+
+      - name: Commit 💾
+        run: |
+          set -euo pipefail
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # Scoped deliberately: an unscoped `git add -A` sweeps up whatever
+          # else happens to be dirty in the runner.
+          git add _data/cv.yml assets/json/resume.json _bibliography/papers.bib cv_tex/generated
+          if git diff --cached --quiet; then
+            echo "Nothing to regenerate."
+            exit 0
+          fi
+          git commit -m "chore: regenerate CV files from common_material/cv.toml [skip ci]"
+          for attempt in 1 2 3; do
+            if git push; then exit 0; fi
+            echo "push failed, rebasing and retrying ($attempt/3)"
+            git pull --rebase
+          done
+          exit 1

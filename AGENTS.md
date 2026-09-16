@@ -12,6 +12,10 @@ Find your change on the left; edit only what is on the right.
 | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- |
 | Dependency pin, plugin activation, feature flag                                                                          | this repo: `Gemfile` **and** `_config.yml` (both — see below)                                                 |
 | Example/demo content, bibliography, data files                                                                           | this repo: `_pages`, `_posts`, `_projects`, `_news`, `_teachings`, `_books`, `_data`                          |
+| CV content: any fact on `/cv/` or in the PDF                                                                             | this repo: `common_material/cv.toml`, then `make cv` — **never** `_data/cv.yml` or `assets/json/resume.json`  |
+| CV prose: the profile paragraph, per-application tailoring                                                               | this repo: `cv_tex/sections/summary.tex`, or a `[profiles.*]` block in `common_material/cv.toml`              |
+| A publication record                                                                                                     | this repo: `common_material/papers.bib` — **never** `_bibliography/papers.bib`, which is generated            |
+| LaTeX layout of the CV                                                                                                   | this repo: `cv_tex/zancanarocv.sty` and the two drivers                                                       |
 | Documentation                                                                                                            | this repo: `docs/` (long-form) or this file (agent rules)                                                     |
 | Cross-plugin integration test, visual parity test                                                                        | this repo: `test/integration_*.sh`, `test/visual/`                                                            |
 | Plugin catalog metadata                                                                                                  | this repo: `_data/featured_plugins.yml`                                                                       |
@@ -35,13 +39,15 @@ _layouts/   _includes/   _sass/   _scripts/   assets/tailwind/   tailwind.config
 
 This restriction applies to **this repo only**. A user's own site created from this template _may_ legally shadow gem-owned files — see [local overrides: your site vs. this repo](docs/ARCHITECTURE.md#local-overrides-your-site-vs-this-repo).
 
-## Three failures that produce no error message
+## Four failures that produce no error message
 
-Read [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md#failure-modes-that-produce-no-error-message) for the full explanation. The short version:
+Read [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md#failure-modes-that-produce-no-error-message) for the first three. The fourth is specific to this fork. The short version:
 
 1. **Features fail silently.** A feature renders only when its gem is loaded _and_ its flag is on _and_ the page opts in. Otherwise the Liquid tag emits an empty string — no warning, no error.
 2. **`Gemfile` and `_config.yml` are two lists that must agree.** A plugin in only one of them is inert. Adding or removing a plugin means editing both. Repo dirs use hyphens (`al-folio-core`); gem/plugin ids use underscores (`al_folio_core`).
-3. **This repo's effective baseurl is `/al-folio`.** `_config.yml` already sets it, so a plain `bundle exec jekyll build` is correct — that is what `deploy.yml`, `broken-links-site.yml` and `axe.yml` run. Passing `--baseurl /al-folio` is redundant but harmless; blanking the baseurl out is what renders the site unstyled with broken links. Dev server is at `http://localhost:4000/al-folio/`.
+3. **This fork's baseurl is `/`, not `/al-folio`.** `_config.yml` sets `url: https://jesus-333.github.io` and `baseurl: /`, because this is a GitHub _user_ site served at the domain root. A plain `bundle exec jekyll build` is correct — that is what `deploy.yml`, `broken-links-site.yml` and `axe.yml` run. Do **not** pass `--baseurl /al-folio`: that is upstream's value and it would break every link. Dev server is at `http://localhost:4000/`. (The `test/integration_*.sh` scripts still pass `--baseurl /al-folio` internally against their own scratch configs; that is their business, not yours.)
+
+4. **Generated CV files look editable and are not.** `_data/cv.yml`, `assets/json/resume.json`, `_bibliography/papers.bib` and everything under `cv_tex/generated/` are written by `bin/cv/*` from `common_material/`. Editing one works locally right up until the next `make cv` silently reverts it, and `unit-tests.yml` fails the push before that. Every one of them carries a "GENERATED FILE -- DO NOT EDIT" banner. See [`common_material/README.md`](common_material/README.md).
 
 ## Validated local command set
 
@@ -52,7 +58,8 @@ bundle install
 npm ci
 npm run lint:prettier
 npm run lint:style-contract
-bundle exec jekyll build --baseurl /al-folio
+bundle exec jekyll build          # NOT --baseurl /al-folio; see above
+make cv-check ALLOW_TODO=1        # generated CV files match common_material/cv.toml
 bash test/integration_comments.sh
 bash test/integration_plugin_toggles.sh
 bash test/integration_distill.sh
