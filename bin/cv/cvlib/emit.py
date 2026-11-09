@@ -1,4 +1,5 @@
-"""Writing generated files, and the --check gate.
+"""
+Writing generated files, and the --check gate.
 
 No timestamp and no version string in the banner: either would make
 every regeneration a diff and would break the byte-for-byte idempotency
